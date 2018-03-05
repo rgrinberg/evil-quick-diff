@@ -6,7 +6,8 @@
     (insert "left right")
     (evil-quick-diff 1 4)
     (with-mock
-     (stub ediff-buffers)
+     (stub split-window)
+     (stub make-frame)
      (evil-quick-diff 6 10))
     (should
      (and
