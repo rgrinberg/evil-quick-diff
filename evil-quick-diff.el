@@ -60,6 +60,9 @@
   (ignore-errors (kill-buffer " *evil-quick-diff-1*"))
   (ignore-errors (kill-buffer " *evil-quick-diff-2*")))
 
+(defun evil-quick-diff--ediff-setup ()
+  (add-hook 'ediff-quit-hook #'evil-quick-diff--cleanup-buffers))
+
 (defun evil-quick-diff--do-diff (curr-buffer orig-buffer curr-beg curr-end
                                              orig-beg orig-end extract-fn)
   (evil-quick-diff--cleanup-buffers)
@@ -77,7 +80,7 @@
         (goto-char (point-min))
         (insert text2))
       (evil-quick-diff--clean)
-      (ediff-buffers buf1 buf2))))
+      (ediff-buffers buf1 buf2 '(evil-quick-diff--ediff-setup)))))
 
 (evil-define-operator evil-quick-diff (beg end type)
   "Ediff two regions with evil motion."
