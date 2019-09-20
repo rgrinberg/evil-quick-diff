@@ -5,7 +5,7 @@
 ;; Package-Version: 20170510.1959
 ;; Version: 0.0.1
 ;; Keywords: evil, plugin
-;; Package-Requires: ((evil "1.2.8") (cl-lib "0.3"))
+;; Package-Requires: ((evil "1.2.14") (cl-lib "0.3"))
 
 ;;; Commentary:
 ;;
@@ -24,7 +24,7 @@
   :group 'evil)
 
 (defcustom evil-quick-diff-key (kbd "god")
-  "evil-quick-diff operator"
+  "Operator for evil-quick-diff."
   :type `,(if (get 'key-sequence 'widget-type)
               'key-sequence
             'sexp)
@@ -42,29 +42,38 @@
   :type 'sexp
   :group 'evil-quick-diff)
 
-(defvar evil-quick-diff--position nil "Text position which will be diffed")
+(defvar evil-quick-diff--position nil "Text position which will be diffed.")
 
-(defvar evil-quick-diff--overlays nil "Overlays used to highlight marked area")
+(defvar evil-quick-diff--overlays nil "Overlays used to highlight marked area.")
 
 (defun evil-quick-diff--highlight (beg end)
+  "Highlight the region defined by `BEG' and `END' with the quick diff face."
   (let ((o (make-overlay beg end nil t nil)))
     (overlay-put o 'face evil-quick-diff-highlight-face)
     (add-to-list 'evil-quick-diff--overlays o)))
 
 (defun evil-quick-diff--clean ()
+  "Delete overlays created by quick-diff to mark regions that will be diffed."
   (setq evil-quick-diff--position nil)
   (mapc 'delete-overlay evil-quick-diff--overlays)
   (setq evil-quick-diff--overlays nil))
 
 (defun evil-quick-diff--cleanup-buffers ()
+  "Remove the temporary buffers created by quick-diff."
   (ignore-errors (kill-buffer " *evil-quick-diff-1*"))
   (ignore-errors (kill-buffer " *evil-quick-diff-2*")))
 
 (defun evil-quick-diff--ediff-setup ()
+  "Setup cleaning after ediff is exitted."
   (add-hook 'ediff-quit-hook #'evil-quick-diff--cleanup-buffers))
 
 (defun evil-quick-diff--do-diff (curr-buffer orig-buffer curr-beg curr-end
                                              orig-beg orig-end extract-fn)
+  "Create a diff from 2 selections.
+
+First selection is defined in CURR-BUFFER and spanned by CURR-BEG and CURR-END,
+second selection is ORIG-BUFFER spanned by ORIG-BEG and ORIG-END. EXTRACT-FN is
+the function used for extracting the selection from those ranges."
   (evil-quick-diff--cleanup-buffers)
   (let ((text1
          (with-current-buffer orig-buffer (funcall extract-fn orig-beg orig-end)))
@@ -139,8 +148,10 @@
   "Setting evil-quick-diff key bindings."
   (define-key evil-normal-state-map evil-quick-diff-key 'evil-quick-diff)
   (define-key evil-visual-state-map evil-quick-diff-key 'evil-quick-diff)
-  (define-key evil-normal-state-map evil-quick-diff-cancel-key 'evil-quick-diff-cancel)
-  (define-key evil-visual-state-map evil-quick-diff-cancel-key 'evil-quick-diff-cancel))
+  (define-key evil-normal-state-map
+    evil-quick-diff-cancel-key 'evil-quick-diff-cancel)
+  (define-key evil-visual-state-map
+    evil-quick-diff-cancel-key 'evil-quick-diff-cancel))
 
 (provide 'evil-quick-diff)
 ;;; evil-quick-diff.el ends here
