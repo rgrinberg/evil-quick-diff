@@ -133,9 +133,11 @@ the function used for extracting the selection from those ranges."
 ;;;###autoload
 (autoload 'evil-quick-diff "evil-quick-diff"
   "Ediff two regions with evil motion." t)
-
 ;;;###autoload
-(defun evil-quick-diff-cancel ()
+(autoload 'evil-quick-diff-cancel "evil-quick-diff-cancel"
+  "Cancel evil-quick-diff and remove selections." t)
+
+(evil-define-command evil-quick-diff-cancel ()
   "Cancel current pending diff."
   (interactive)
   (if (null evil-quick-diff--position)
